@@ -81,12 +81,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 // Getting URL to the Google Directions API
             }
             for(int i = 0; i<LocationList.size()-1;i++){
-                String url = getDirectionsUrl(new LatLng(latArrayList.get(i), lngArrayList.get(i)),
-                        new LatLng(latArrayList.get(i+1), lngArrayList.get(i+1)));
+               /* String url = getDirectionsUrl(new LatLng(latArrayList.get(i), lngArrayList.get(i)),
+                        new LatLng(latArrayList.get(i+1), lngArrayList.get(i+1)));*/
+
+                String str_origin = "origin=" + latArrayList.get(i) + "," + lngArrayList.get(i);
+                // Destination of route
+                String str_dest = "destination=" + latArrayList.get(i+1) + "," + lngArrayList.get(i+1);
+
+                // Sensor enabled
+                String sensor = "sensor=true";
+                String mode = "mode=driving";
+                String key = "key="+getResources().getString(R.string.google_maps_key);
+                // Building the parameters to the web service
+                String parameters = str_origin + "&" + str_dest + "&" + sensor + "&" + mode + "&" + key;
+
+                // Output format
+                String output = "json";
+
+                // Building the url to the web service
+                String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters;
 
                 DownloadTask downloadTask = new DownloadTask();
 
                 // Start downloading json data from Google Directions API
+                Log.v("DS","###"+url);
                 downloadTask.execute(url);
             }
         }
@@ -134,6 +152,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 DirectionsJSONParser parser = new DirectionsJSONParser();
 
                 routes = parser.parse(jObject);
+                Log.v("DS","*&*&*&"+routes);
             } catch (Exception e) {
                 e.printStackTrace();
             }
