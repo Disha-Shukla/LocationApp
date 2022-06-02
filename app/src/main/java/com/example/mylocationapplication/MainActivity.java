@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     String Location;
     LatLng selectedLatLong;
     DatabaseHandler db;
+    Bundle bundle;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +45,12 @@ public class MainActivity extends AppCompatActivity {
         final AutocompleteSupportFragment autocompleteSupportFragment = (AutocompleteSupportFragment)
                 getSupportFragmentManager().findFragmentById(R.id.autocompleteFragment);
 
+        if (getIntent() != null) {
+            bundle = getIntent().getExtras();
+            if (getIntent().hasExtra("name")) {
+                autocompleteSupportFragment.setText(bundle.getString("name"));
+            }
+        }
         autocompleteSupportFragment.setPlaceFields(Arrays.asList(Place.Field.ID,
                 Place.Field.LAT_LNG, Place.Field.NAME));
         autocompleteSupportFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
@@ -67,6 +74,17 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if(Location.equals("")){
                     Toast.makeText(MainActivity.this, "Select Location",Toast.LENGTH_LONG).show();
+                }
+                if (getIntent().hasExtra("flag")) {
+                    bundle = getIntent().getExtras();
+                    if (bundle.getString("flag").
+                            equalsIgnoreCase("edit")) {
+                        db.updateContact(new Location
+                                (bundle.getInt("id", 0),
+                                        Location, selectedLatLong.latitude,selectedLatLong.longitude));
+                        Intent intent = new Intent(MainActivity.this, LocationListActivity.class);
+                        startActivity(intent);
+                    }
                 }
                 else{
                     Toast.makeText(MainActivity.this, "Location"+Location+"latlong"+
